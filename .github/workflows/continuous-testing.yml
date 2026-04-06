@@ -22,14 +22,14 @@ jobs:
       - name: Update cargo to latest dependencies
         run: cargo update --verbose
       - name: Build
-        run: cargo build --verbose
+        run: cargo build  --release --verbose
       - name: Run tests
         run: cargo test --      
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: test-artifact
-          path: output/test.tar.gz        
+          path: target/release/  # Uploads everything in the release build directory
   clippy_lint:
     name: Clippy
   
