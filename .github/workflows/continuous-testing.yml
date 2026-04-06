@@ -25,11 +25,38 @@ jobs:
         run: cargo build  --release --verbose
       - name: Run tests
         run: cargo test --      
-      - name: Upload artifact
+
+      - name: Fetch local artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: artifacts-*
+          path: target/distrib/
+          merge-multiple: true
+      - id: cargo-dist
+        shell: bash
+        run: |
+          dist build --release --output-format=json "--artifacts=global" > dist-manifest.json
+          echo "dist ran successfully"
+
+          # Parse out what we just built and upload it to scratch storage
+          echo "paths<<EOF" >> "$GITHUB_OUTPUT"
+          jq --raw-output ".upload_files[]" dist-manifest.json >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+          cp dist-manifest.json "$BUILD_MANIFEST_NAME"
+      - name: "Upload artifacts"
         uses: actions/upload-artifact@v4
         with:
-          name: test-artifact
-          path: target/release/  # Uploads everything in the release build directory
+          name: artifacts-build-global
+          path: |
+            ${{ steps.cargo-dist.outputs.paths }}
+      # ${{ env.BUILD_MANIFEST_NAME }}
+    
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: test-artifact
+      #     path: target/release/  # Uploads everything in the release build directory
   clippy_lint:
     name: Clippy
   
