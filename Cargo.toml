@@ -28,7 +28,7 @@ open = "^5"
 notify = "^8.0"
 git2 = "^0.20"
 # Parsing
-comrak = "^0.39"
+comrak = "^0.52"
 ignore = "^0.4"
 regex = "^1.11"
 yaml-rust = "0.4"
