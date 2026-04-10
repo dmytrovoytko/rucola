@@ -425,6 +425,17 @@ impl super::Screen for SelectScreen {
                     KeyCode::Char('k' | 'K') | KeyCode::Up => {
                         self.mode = SelectMode::TagList(selected.saturating_sub(1));
                     }
+                    // PageDown
+                    KeyCode::PageDown => {
+                        let total = self.index.borrow().tags_vec().len();
+                        self.mode = SelectMode::TagList(
+                            (selected.saturating_add(10)).min(total.saturating_sub(10)),
+                        );
+                    }
+                    // PageUp
+                    KeyCode::PageUp => {
+                        self.mode = SelectMode::TagList(selected.saturating_sub(10));
+                    }
                     // Enter: Find the tag that is selected, then filter by it
                     KeyCode::Enter => {
                         // extract the selected tag
